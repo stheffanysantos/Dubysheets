@@ -3,18 +3,19 @@
     <div class="image-header">
       <img src="@/assets/dubyicon.png" alt="Minha Imagem" />
     </div>
-    <!-- O router-view é o ponto onde as páginas serão carregadas -->
-    <router-view />
+    <PlanilhaPedidos />
     <RodapePedido />
   </div>
 </template>
 
 <script>
+import PlanilhaPedidos from './components/PlanilhaPedidos.vue';
 import RodapePedido from './components/RodapePedido.vue';
 
 export default {
   components: {
     RodapePedido,
+    PlanilhaPedidos,
   },
 };
 </script>

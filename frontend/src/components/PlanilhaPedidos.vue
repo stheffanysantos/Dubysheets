@@ -33,9 +33,17 @@
           <div class="form-group">
             <label for="status">Status:</label>
             <select id="status" v-model="novoPedido.status" required>
-              <option value="concluido">Concluído</option>
-              <option value="preparando">Preparando</option>
-              <option value="ja foi">Já foi</option>
+              <option value="concluido">Pendente</option>
+              <option value="preparando">Entregue</option>
+              <option value="cancelado">Cancelado</option>
+              <option value="retirado no local">Retirar no local</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="turno">Turno:</label>
+            <select id="turno" v-model="novoPedido.turno" required>
+              <option value="manha">Manhã</option>
+              <option value="tarde">Tarde</option>
             </select>
           </div>
           <div class="form-group">
@@ -64,6 +72,7 @@
               <th>Empresa</th>
               <th>Previsão</th>
               <th>Status</th>
+              <th>Turno</th>
               <th>Observação</th>
               <th>Ações</th>
             </tr>
@@ -78,6 +87,7 @@
               <td>{{ pedido.empresa }}</td>
               <td>{{ formatarData(pedido.previsao) }}</td> <!-- Também formate a data de previsão -->
               <td>{{ pedido.status }}</td>
+              <td>{{ pedido.turno }}</td>
               <td>{{ pedido.observacao || 'N/A' }}</td>
               <td>
                 <button @click="editarPedido(index)" class="btn btn-edit">Editar</button>
@@ -121,6 +131,7 @@ export default {
         empresa: "",
         previsao: "",
         status: "preparando",
+        turno: "Manhã",
         observacao: "",
       },
     };
@@ -135,7 +146,7 @@ export default {
       }
     },
 
-    // Método chamado para adicionar novo pedido
+    // Método para adicionar um novo pedido
     async addPedido() {
       try {
         const pedidoAdicionado = await pedidoService.addPedido(this.novoPedido);
@@ -144,11 +155,11 @@ export default {
         }
         this.resetForm(); // Limpa o formulário após adicionar
       } catch (error) {
-        console.error("Erro ao adicionar pedido:", error);
+        console.error("Erro ao adicionar pedido:", error.response?.data || error.message);
       }
     },
 
-    // Formata a data no formato 'dd/mm/yyyy'
+    // Método para formatar a data no formato 'dd/mm/yyyy'
     formatarData(data) {
       const date = new Date(data);
       const dia = String(date.getDate()).padStart(2, '0');
@@ -157,7 +168,7 @@ export default {
       return `${dia}/${mes}/${ano}`;
     },
 
-    // Reseta os dados do formulário
+    // Método para resetar os dados do formulário
     resetForm() {
       this.novoPedido = {
         data: "",
@@ -168,35 +179,28 @@ export default {
         empresa: "",
         previsao: "",
         status: "preparando",
+        turno: "Manhã",
         observacao: "",
       };
     },
 
-    // Abre o modal para editar o pedido
+    // Método para abrir o modal para edição
     editarPedido(index) {
       this.pedidoEditado = { ...this.pedidos[index] };
       this.isEditing = true;
     },
 
-    // Método que salva o pedido editado e atualiza a lista
+    // Método para salvar o pedido editado
     async salvarPedidoEditado(pedidoAtualizado) {
       try {
-        // Atualiza o pedido na lista de pedidos
-        const index = this.pedidos.findIndex((p) => p.id === pedidoAtualizado.id);
+        const pedidoEditado = await pedidoService.updatePedido(pedidoAtualizado.id, pedidoAtualizado);
+        const index = this.pedidos.findIndex((p) => p.id === pedidoEditado.id);
         if (index !== -1) {
-          this.pedidos[index] = pedidoAtualizado;
+          this.pedidos.splice(index, 1, pedidoEditado); // Atualiza o pedido na lista
         }
-
-        // Chama o backend para atualizar o pedido
-        const resposta = await pedidoService.updatePedido(pedidoAtualizado.id, pedidoAtualizado);
-        if (resposta) {
-          console.log("Pedido atualizado no backend:", resposta);
-        }
-
-        // Fechar o modal após salvar
-        this.fecharModal();
+        this.fecharModal(); // Fecha o modal após salvar
       } catch (error) {
-        console.error("Erro ao salvar pedido editado:", error);
+        console.error("Erro ao salvar pedido editado:", error.response?.data || error.message);
       }
     },
 
@@ -207,17 +211,17 @@ export default {
         await pedidoService.deletePedido(pedido.id); // Exclui do backend
         this.pedidos.splice(index, 1); // Remove da lista no frontend
       } catch (error) {
-        console.error("Erro ao excluir pedido:", error);
+        console.error("Erro ao excluir pedido:", error.response?.data || error.message);
       }
     },
 
-    // Método para fechar o modal
+    // Método para fechar o modal de edição
     fecharModal() {
       this.isEditing = false;
       this.pedidoEditado = null;
     },
 
-    // Método que é chamado quando o pedido é editado no modal
+    // Método para atualizar os pedidos
     atualizarPedidos() {
       this.getPedidos(); // Recarrega os pedidos após a edição
     },
@@ -226,6 +230,7 @@ export default {
     this.getPedidos(); // Carrega os pedidos ao iniciar o componente
   },
 };
+
 </script>
 
 <style>
@@ -234,11 +239,12 @@ export default {
   .app {
     font-family: Nunito, Tahoma, Geneva, Verdana, sans-serif;
     margin: 20px auto;
-    max-width: 80%; /* Largura máxima */
+    max-width: 90%; /* Largura máxima */
     background: #f4f7fb;
     border-radius: 10px;
     padding: 20px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
   }
 
   .main-container {
@@ -254,16 +260,15 @@ export default {
     border-radius: 10px;
     padding: 20px; /* Ajuste o preenchimento */
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    flex: 1;
   }
 
   .form-container {
-    margin-right: 20px; /* Ajuste a margem para o formulário */
-    padding: 20px;
+    margin-right: 20px;
+    padding: 30px;
+    align-items: center;
   }
 
   .relatorio-container {
-    max-height: 400px;
     width: 100%;
     margin-left: 0;
   }

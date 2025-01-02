@@ -1,59 +1,51 @@
 import axios from "axios";
 
-// Criando uma instância do axios
-const api = axios.create({
-  baseURL: "http://localhost:8800/api",
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+const API_BASE_URL = "http://localhost:8800/api/pedidos";
 
 const pedidoService = {
+  // Buscar todos os pedidos
   async getPedidos() {
     try {
-      const response = await api.get("/"); // GET para /api/
-      console.log("Pedidos:", response.data);
+      const response = await axios.get(API_BASE_URL);
       return response.data;
     } catch (error) {
-      console.error("Erro ao buscar pedidos:", error);
+      console.error("Erro ao buscar pedidos:", error.response?.data || error.message);
       throw error;
     }
   },
 
+  // Criar um novo pedido
   async addPedido(pedido) {
     try {
-      const response = await api.post("/", pedido); // POST para /api/
-      console.log("Pedido criado:", response.data);
+      const response = await axios.post(API_BASE_URL, pedido);
       return response.data;
     } catch (error) {
-      console.error("Erro ao criar pedido:", error);
+      console.error("Erro ao criar pedido:", error.response?.data || error.message);
       throw error;
     }
   },
 
-  async updatePedido(id, pedido) {
+  // Atualizar um pedido existente
+  async updatePedido(id, pedidoAtualizado) {
     try {
-      const response = await api.put(`/${id}`, pedido); // PUT para /api/:id
-      console.log("Pedido atualizado:", response.data);
+      const response = await axios.put(`${API_BASE_URL}/${id}`, pedidoAtualizado);
       return response.data;
     } catch (error) {
-      console.error("Erro ao atualizar pedido:", error);
+      console.error("Erro ao atualizar pedido:", error.response?.data || error.message);
       throw error;
     }
   },
 
+  // Excluir um pedido
   async deletePedido(id) {
     try {
-      const response = await api.delete(`/${id}`); // DELETE para /api/:id
-      console.log("Pedido deletado:", response.data);
+      const response = await axios.delete(`${API_BASE_URL}/${id}`);
       return response.data;
     } catch (error) {
-      console.error("Erro ao deletar pedido:", error);
+      console.error("Erro ao excluir pedido:", error.response?.data || error.message);
       throw error;
     }
   },
 };
-
-
 
 export default pedidoService;

@@ -1,4 +1,4 @@
-import mysql from 'mysql2';
+import mysql from "mysql2";
 
 // Criação da conexão
 const connection = mysql.createConnection({
@@ -9,4 +9,4 @@ const connection = mysql.createConnection({
 });
 
 // Exporta a conexão
-export default connection; // Exportação default
+export default connection;

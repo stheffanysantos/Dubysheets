@@ -1,5 +1,5 @@
 import express from "express";
-import { getPedidos, addPedido, updatePedido, deletePedido } from "../controllers/user.js";
+import { getPedidos, addPedido, updatePedido, deletePedido } from "../controllers/pedidos.js";
 
 const router = express.Router();
 
@@ -16,7 +16,7 @@ router.put("/:id", updatePedido);
 router.delete("/:id", deletePedido);
 
 router.get("/users", (req, res) => {
-    res.json({ message: "Rota de usuários funcionando!" });
+    res.json({ message: "Rota de pedidos funcionando!" });
 });
 
 export default router;

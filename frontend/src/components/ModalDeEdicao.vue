@@ -37,9 +37,18 @@
           <div class="form-group">
             <label for="status">Status:</label>
             <select id="status" v-model="pedidoTemp.status" required>
-              <option value="concluido">Concluído</option>
-              <option value="preparando">Preparando</option>
-              <option value="ja foi">Já foi</option>
+              <option value="pendente">Pendente</option>
+              <option value="entregue">Entregue</option>
+              <option value="cancelado">Cancelado</option>
+              <option value="retirado">Retirar no local</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="turno">Turno:</label>
+            <select id="turno" v-model="pedidoTemp.turno" required>
+              <option value="manha">Manhã</option>
+              <option value="tarde">Tarde</option>
             </select>
           </div>
 
@@ -60,8 +69,6 @@
     </div>
   </div>
 </template>
-
-
 
 <script>
 import pedidoService from "@/services/api";
@@ -86,7 +93,6 @@ export default {
     pedidoEditado: {
       handler(newPedido) {
         if (newPedido) {
-          // Atribuindo os dados diretamente, sem formatar as datas
           this.pedidoTemp = {
             ...newPedido,
             data: newPedido.data || "",
@@ -98,23 +104,15 @@ export default {
     },
   },
   methods: {
-    // Salvar as alterações e enviar para o backend
     async salvarPedidoEditado() {
-      console.log("Pedido antes de salvar:", this.pedidoTemp);
-
       try {
-        // Enviando os dados diretamente para o backend (sem formatação de data)
         const pedidoEnviado = {
           ...this.pedidoTemp,
-          // O backend deve se encarregar de formatar as datas corretamente
         };
 
         const response = await pedidoService.updatePedido(pedidoEnviado.id, pedidoEnviado);
-        console.log("Resposta da API:", response);
-
         if (response) {
-          console.log("Pedido atualizado no backend:", response);
-          this.$emit("atualizarPlanilhas"); // Atualiza a tabela após a edição
+          this.$emit("atualizarPlanilhas");
           this.fecharModal();
         } else {
           alert("Erro ao atualizar pedido.");
@@ -132,117 +130,114 @@ export default {
 };
 </script>
 
-
 <style scoped>
 .modal {
-position: fixed;
-top: 0;
-left: 0;
-right: 0;
-bottom: 0;
-background: rgba(0, 0, 0, 0.7); /* Escurecer fundo */
-display: flex;
-justify-content: center;
-align-items: center;
-z-index: 1000; /* Garante que o modal fique acima de outros elementos */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
 
 .modal-content {
-background: #f9f9f9;
-padding: 20px;
-border-radius: 8px;
-width: 60%;
-max-width: 500px; /* Ajusta a largura do modal */
-box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-display: flex;
-flex-direction: column;
-gap: 10px;
-overflow-y: auto; /* Garante rolagem no conteúdo, caso necessário */
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  width: 60%;
+  max-width: 500px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
 }
 
 h2 {
-margin-bottom: 20px;
-font-size: 1.6rem;
-font-weight: bold;
-color: #322871;
-text-align: center;
+  margin-bottom: 20px;
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #322871;
+  text-align: center;
 }
 
 .form-group-container {
-display: flex;
-flex-wrap: wrap;
-gap: 10px;
-justify-content: space-between; /* Garante que os campos não fiquem muito próximos */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
 }
 
 .form-group {
-width: 48%;
-margin-bottom: 8px;
+  width: 48%;
+  margin-bottom: 8px;
 }
 
 input,
 select,
 textarea {
-width: 100%;
-padding: 6px; /* Menor preenchimento */
-font-size: 0.85rem; /* Reduzir o tamanho da fonte */
-margin-top: 5px;
-border: 1px solid #ccc;
-border-radius: 6px;
-background-color: #fff;
+  width: 100%;
+  padding: 6px;
+  font-size: 0.85rem;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #fff;
 }
 
 textarea {
-height: 70px; /* Reduzir altura do textarea */
+  height: 70px;
 }
 
 button {
-cursor: pointer;
+  cursor: pointer;
 }
 
 button[type="submit"] {
-background: #73ba60;
-color: white;
-border: none;
-padding: 10px 20px;
-border-radius: 6px;
-margin-top: 20px;
+  background: #73ba60;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  margin-top: 20px;
 }
 
 button[type="button"] {
-background: #dc3545;
-color: white;
-border: none;
-padding: 10px 20px;
-border-radius: 6px;
-margin-top: 10px;
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  margin-top: 10px;
 }
 
 button:hover {
-opacity: 0.9;
+  opacity: 0.9;
 }
 
 button[type="submit"]:hover {
-background-color: #4a9e45;
+  background-color: #4a9e45;
 }
 
 button[type="button"]:hover {
-background-color: #c82333;
+  background-color: #c82333;
 }
 
 .btn-close {
-background: #322871;
-color: white;
-border: none;
-padding: 10px 20px;
-border-radius: 6px;
-align-self: flex-start;
-margin-top: 20px;
+  background: #322871;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  align-self: flex-start;
+  margin-top: 20px;
 }
 
 .btn-close:hover {
-background-color: #12283f;
+  background-color: #12283f;
 }
-
 </style>
-

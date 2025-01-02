@@ -12,7 +12,7 @@ export const getPedidos = (_, res) => {
 };
 
 export const addPedido = (req, res) => {
-  const q = "INSERT INTO pedidos(`data`, `produto`, `quantidade`, `preco`, `unidade`, `empresa`, `status`, `observacao`, `previsao`) VALUES(?)";
+  const q = "INSERT INTO pedidos(`data`, `produto`, `quantidade`, `preco`, `unidade`, `empresa`, `status`,`turno`, `observacao`, `previsao`) VALUES(?)";
   const values = [
     req.body.data,
     req.body.produto,
@@ -21,6 +21,7 @@ export const addPedido = (req, res) => {
     req.body.unidade,
     req.body.empresa,
     req.body.status,
+    req.body.turno,
     req.body.observacao,
     req.body.previsao
   ];
@@ -44,7 +45,7 @@ export const addPedido = (req, res) => {
 
 // Atualizar um pedido
 export const updatePedido = (req, res) => {
-  const q = "UPDATE pedidos SET `data` = ?, `produto` = ?, `quantidade` = ?, `preco` = ?, `unidade` = ?, `empresa` = ?, `status` = ?, `observacao` = ?, `previsao` = ? WHERE `id` = ?";
+  const q = "UPDATE pedidos SET `data` = ?, `produto` = ?, `quantidade` = ?, `preco` = ?, `unidade` = ?, `empresa` = ?, `status` = ?,`turno`= ?, `observacao` = ?, `previsao` = ? WHERE `id` = ?";
 
   const values = [
     req.body.data,
@@ -54,6 +55,7 @@ export const updatePedido = (req, res) => {
     req.body.unidade,
     req.body.empresa,
     req.body.status,
+    req.body.turno,
     req.body.observacao,
     req.body.previsao,
   ];
